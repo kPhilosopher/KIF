@@ -395,4 +395,14 @@ typedef KIFTestStepResult (^KIFTestStepExecutionBlock)(KIFTestStep *step, NSErro
  */
 + (id)stepToTapRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
 
+
+#pragma mark - added by Jin
++ (id)stepToExtractDeleteLabelOfRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath  toStringReference:(NSString **)stringReference;
++ (id)stepToDeleteRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
++ (id)stepToTapViewWithStringAtKey:(NSString *)key ofReferenceDictionary:(NSDictionary *)referenceDictionary;
++ (id)stepToTapViewWithStringReference:(NSString **)stringReference;
++ (id)stepToSwipeRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
+//+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel sectionsArray:(NSArray *)sectionsArray;
++ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
+
 @end
