@@ -403,6 +403,6 @@ typedef KIFTestStepResult (^KIFTestStepExecutionBlock)(KIFTestStep *step, NSErro
 + (id)stepToTapViewWithStringReference:(NSString **)stringReference;
 + (id)stepToSwipeRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
 //+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel sectionsArray:(NSArray *)sectionsArray;
-+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
+//+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
 
 @end

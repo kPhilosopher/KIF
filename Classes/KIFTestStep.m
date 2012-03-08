@@ -1068,102 +1068,102 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
         KIFTestWaitCondition(NO, error, @"Waiting for the view to settle.");
     }];
 }
-
-+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
-{
-    NSString *description = [NSString stringWithFormat:@"Step to tap top row of every sections in tableView with label %@", tableViewLabel];
-	//for wait
-	__block NSTimeInterval startTime = 0;
-	NSTimeInterval interval = 9;
-	
-	//for back tap
-	const NSTimeInterval quiesceWaitInterval = 0.5;
-	__block NSTimeInterval quiesceStartTime = 0.0;
-	
-	__block UIView *view = nil;
-	NSString *value = nil;
-	UIAccessibilityTraits traits = UIAccessibilityTraitNone;
-	NSString *label = @"Back";
-	
-    return [KIFTestStep stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
-        UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:tableViewLabel];
-        KIFTestCondition(element, error, @"View with label %@ not found", tableViewLabel);
-        UITableView *tableView = (UITableView*)[UIAccessibilityElement viewContainingAccessibilityElement:element];
-        
-        KIFTestCondition([tableView isKindOfClass:[UITableView class]], error, @"Specified view is not a UITableView");
-        
-        KIFTestCondition(tableView, error, @"Table view with label %@ not found", tableViewLabel);
-		
-		
-		//for tap
-		NSArray *sectionsArray = [referenceDictionary objectForKey:sectionsArrayKey];
-		int sectionCount = 0;
-		//        for (NSArray *sectionArray in sectionsArray)
-		//		{	
-		quiesceStartTime = 0.0;
-		if ([sectionsArray lastObject] != nil)
-		{
-			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:sectionCount];
-			UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-			CGRect cellFrame = [cell.contentView convertRect:[cell.contentView frame] toView:tableView];
-			[tableView tapAtPoint:CGPointCenteredInRect(cellFrame)];
-			sectionCount = sectionCount + 1;
-			
-			//wait
-			if (startTime == 0) {
-				startTime = [NSDate timeIntervalSinceReferenceDate];
-			}
-			KIFTestWaitCondition((([NSDate timeIntervalSinceReferenceDate] - startTime) >= interval), error, @"Waiting for time interval to expire.");
-			
-			//back out
-			
-			
-			// If we've already tapped the view and stored it to a variable, and we've waited for the quiesce time to elapse, then we're done.
-			if (view) {
-				KIFTestWaitCondition(([NSDate timeIntervalSinceReferenceDate] - quiesceStartTime) >= quiesceWaitInterval, error, @"Waiting for view to become the first responder.");
-				return KIFTestStepResultSuccess;
-			}
-			
-			UIAccessibilityElement *element = [self _accessibilityElementWithLabel:label accessibilityValue:value tappable:YES traits:traits error:error];
-			if (!element) {
-				return KIFTestStepResultWait;
-			}
-			
-			view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
-			KIFTestWaitCondition(view, error, @"Failed to find view for accessibility element with label \"%@\"", label);
-			
-			if (![self _isUserInteractionEnabledForView:view]) {
-				if (error) {
-					*error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"View with accessibility label \"%@\" is not enabled for interaction", label], NSLocalizedDescriptionKey, nil]] autorelease];
-				}
-				return KIFTestStepResultWait;
-			}
-			
-			CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
-			CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
-			
-			// This is mostly redundant of the test in _accessibilityElementWithLabel:
-			KIFTestWaitCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
-			[view tapAtPoint:tappablePointInElement];
-			
-			KIFTestCondition(![view canBecomeFirstResponder] || [view isDescendantOfFirstResponder], error, @"Failed to make the view %@ which contains the accessibility element \"%@\" into the first responder", view, label);
-			
-			quiesceStartTime = [NSDate timeIntervalSinceReferenceDate];
-			
-			KIFTestWaitCondition(NO, error, @"Waiting for the view to settle.");
-			
-			
-			//wait
-			startTime = 0;
-			if (startTime == 0) {
-				startTime = [NSDate timeIntervalSinceReferenceDate];
-			}
-			KIFTestWaitCondition((([NSDate timeIntervalSinceReferenceDate] - startTime) >= interval), error, @"Waiting for time interval to expire.");
-		}
-		//        }
-		step.timeout = interval * 3;
-        return KIFTestStepResultSuccess;
-    }];
-}
+//
+//+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
+//{
+//    NSString *description = [NSString stringWithFormat:@"Step to tap top row of every sections in tableView with label %@", tableViewLabel];
+//	//for wait
+//	__block NSTimeInterval startTime = 0;
+//	NSTimeInterval interval = 9;
+//	
+//	//for back tap
+//	const NSTimeInterval quiesceWaitInterval = 0.5;
+//	__block NSTimeInterval quiesceStartTime = 0.0;
+//	
+//	__block UIView *view = nil;
+//	NSString *value = nil;
+//	UIAccessibilityTraits traits = UIAccessibilityTraitNone;
+//	NSString *label = @"Back";
+//	
+//    return [KIFTestStep stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
+//        UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:tableViewLabel];
+//        KIFTestCondition(element, error, @"View with label %@ not found", tableViewLabel);
+//        UITableView *tableView = (UITableView*)[UIAccessibilityElement viewContainingAccessibilityElement:element];
+//        
+//        KIFTestCondition([tableView isKindOfClass:[UITableView class]], error, @"Specified view is not a UITableView");
+//        
+//        KIFTestCondition(tableView, error, @"Table view with label %@ not found", tableViewLabel);
+//		
+//		
+//		//for tap
+//		NSArray *sectionsArray = [referenceDictionary objectForKey:sectionsArrayKey];
+//		int sectionCount = 0;
+//		//        for (NSArray *sectionArray in sectionsArray)
+//		//		{	
+//		quiesceStartTime = 0.0;
+//		if ([sectionsArray lastObject] != nil)
+//		{
+//			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:sectionCount];
+//			UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+//			CGRect cellFrame = [cell.contentView convertRect:[cell.contentView frame] toView:tableView];
+//			[tableView tapAtPoint:CGPointCenteredInRect(cellFrame)];
+//			sectionCount = sectionCount + 1;
+//			
+//			//wait
+//			if (startTime == 0) {
+//				startTime = [NSDate timeIntervalSinceReferenceDate];
+//			}
+//			KIFTestWaitCondition((([NSDate timeIntervalSinceReferenceDate] - startTime) >= interval), error, @"Waiting for time interval to expire.");
+//			
+//			//back out
+//			
+//			
+//			// If we've already tapped the view and stored it to a variable, and we've waited for the quiesce time to elapse, then we're done.
+//			if (view) {
+//				KIFTestWaitCondition(([NSDate timeIntervalSinceReferenceDate] - quiesceStartTime) >= quiesceWaitInterval, error, @"Waiting for view to become the first responder.");
+//				return KIFTestStepResultSuccess;
+//			}
+//			
+//			UIAccessibilityElement *element = [self _accessibilityElementWithLabel:label accessibilityValue:value tappable:YES traits:traits error:error];
+//			if (!element) {
+//				return KIFTestStepResultWait;
+//			}
+//			
+//			view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
+//			KIFTestWaitCondition(view, error, @"Failed to find view for accessibility element with label \"%@\"", label);
+//			
+//			if (![self _isUserInteractionEnabledForView:view]) {
+//				if (error) {
+//					*error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"View with accessibility label \"%@\" is not enabled for interaction", label], NSLocalizedDescriptionKey, nil]] autorelease];
+//				}
+//				return KIFTestStepResultWait;
+//			}
+//			
+//			CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
+//			CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
+//			
+//			// This is mostly redundant of the test in _accessibilityElementWithLabel:
+//			KIFTestWaitCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
+//			[view tapAtPoint:tappablePointInElement];
+//			
+//			KIFTestCondition(![view canBecomeFirstResponder] || [view isDescendantOfFirstResponder], error, @"Failed to make the view %@ which contains the accessibility element \"%@\" into the first responder", view, label);
+//			
+//			quiesceStartTime = [NSDate timeIntervalSinceReferenceDate];
+//			
+//			KIFTestWaitCondition(NO, error, @"Waiting for the view to settle.");
+//			
+//			
+//			//wait
+//			startTime = 0;
+//			if (startTime == 0) {
+//				startTime = [NSDate timeIntervalSinceReferenceDate];
+//			}
+//			KIFTestWaitCondition((([NSDate timeIntervalSinceReferenceDate] - startTime) >= interval), error, @"Waiting for time interval to expire.");
+//		}
+//		//        }
+//		step.timeout = interval * 3;
+//        return KIFTestStepResultSuccess;
+//    }];
+//}
 
 @end
