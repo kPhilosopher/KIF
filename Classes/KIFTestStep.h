@@ -275,6 +275,41 @@ typedef KIFTestStepResult (^KIFTestStepExecutionBlock)(KIFTestStep *step, NSErro
 + (id)stepToWaitForNotificationName:(NSString*)name object:(id)object;
 
 /*!
+ @method stepToTapViewWithAccessibilityLabelInReferenceDictionary:labelKey:
+ @abstract A step that taps a particular view in the view hierarchy specified during run-time.
+ @discussion The view or accessibility element with the given dictionary is searched for in the view hierarchy. If the element isn't found or isn't currently tappable, then the step will attempt to wait until it is. Once the view is present and tappable, a tap event is simulated in the center of the view or element.
+ @param referenceDictionary The dictionary that will contain the accessibility label of the element to tap.
+ @param labelKey The key of the dictionary to the accessibility label of the element to tap.
+ @result A configured test step.
+ */
++ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey;
+
+/*!
+ @method stepToTapViewWithAccessibilityLabelInReferenceDictionary:labelKey:traitsKey:
+ @abstract A step that taps a particular view in the view hierarchy.
+ @discussion The view or accessibility element with the given dictionary is searched for in the view hierarchy. If the element isn't found or isn't currently tappable, then the step will attempt to wait until it is. Once the view is present and tappable, a tap event is simulated in the center of the view or element.
+ @param referenceDictionary The dictionary that will contain the accessibility label of the element to tap.
+ @param labelKey The key of the dictionary to the accessibility label of the element to tap.
+ @param traitsKey The key of the dictionary to the accessibility traits of the element to tap. Elements that do not include at least these traits are ignored.
+ @result A configured test step.
+ */
++ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey traitsKey:(NSString *)traitsKey;
+
+/*!
+ @method stepToTapViewWithAccessibilityLabelInReferenceDictionary:labelKey:valueKey:traitsKey:
+ @abstract A step that taps a particular view in the view hierarchy.
+ @discussion The view or accessibility element with the given dictionary is searched for in the view hierarchy. If the element isn't found or isn't currently tappable, then the step will attempt to wait until it is. Once the view is present and tappable, a tap event is simulated in the center of the view or element.
+ 
+ This variation allows finding a particular instance of an accessibility element. For example, a table view might have multiple elements with the accessibility label of "Employee", but only one that also has the accessibility value of "Bob".
+ @param referenceDictionary The dictionary that will contain the accessibility label of the element to tap.
+ @param labelKey The key of the dictionary to the accessibility label of the element to tap.
+ @param traitsKey The key of the dictionary to the accessibility traits of the element to tap. Elements that do not include at least these traits are ignored.
+ @param traitsKey The key of the dictionary to the accessibility traits of the element to tap. Elements that do not include at least these traits are ignored.
+ @result A configured test step.
+ */
++ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey valueKey:(NSString *)valueKey traitsKey:(NSString *)traitsKey;
+
+/*!
  @method stepToTapViewWithAccessibilityLabel:
  @abstract A step that taps a particular view in the view hierarchy.
  @discussion The view or accessibility element with the given label is searched for in the view hierarchy. If the element isn't found or isn't currently tappable, then the step will attempt to wait until it is. Once the view is present and tappable, a tap event is simulated in the center of the view or element.
@@ -394,15 +429,5 @@ typedef KIFTestStepResult (^KIFTestStepExecutionBlock)(KIFTestStep *step, NSErro
  @result A configured test step.
  */
 + (id)stepToTapRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
-
-
-#pragma mark - added by Jin
-+ (id)stepToExtractDeleteLabelOfRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath  toStringReference:(NSString **)stringReference;
-+ (id)stepToDeleteRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
-+ (id)stepToTapViewWithStringAtKey:(NSString *)key ofReferenceDictionary:(NSDictionary *)referenceDictionary;
-+ (id)stepToTapViewWithStringReference:(NSString **)stringReference;
-+ (id)stepToSwipeRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
-//+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel sectionsArray:(NSArray *)sectionsArray;
-//+ (id)stepToTapFirstRowOfEverySectionsInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel referenceDictionary:(NSMutableDictionary *)referenceDictionary sectionsArrayKey:(NSString *)sectionsArrayKey;
 
 @end
