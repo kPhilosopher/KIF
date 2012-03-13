@@ -148,21 +148,21 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
         
         // If the app is ignoring interaction events, then wait before doing our analysis
         KIFTestWaitCondition(![[UIApplication sharedApplication] isIgnoringInteractionEvents], error, @"Application is ignoring interaction events.");
-		
+
         // If the element can't be found, then we're done
         UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:label accessibilityValue:value traits:traits];
         if (!element) {
             return KIFTestStepResultSuccess;
         }
-		
+
         UIView *view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
-		
+
         // If we found an element, but it's not associated with a view, then something's wrong. Wait it out and try again.
         KIFTestWaitCondition(view, error, @"Cannot find view containing accessibility element with the label \"%@\"", label);
-		
+
         // Hidden views count as absent
         KIFTestWaitCondition([view isHidden], error, @"Accessibility element with label \"%@\" is visible and not hidden.", label);
-		
+
         return KIFTestStepResultSuccess;
     }];
 }
@@ -200,9 +200,9 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
         if (startTime == 0) {
             startTime = [NSDate timeIntervalSinceReferenceDate];
         }
-		
+
         KIFTestWaitCondition((([NSDate timeIntervalSinceReferenceDate] - startTime) >= interval), error, @"Waiting for time interval to expire.");
-		
+
         return KIFTestStepResultSuccess;
     }];
     
@@ -230,77 +230,6 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
     return step;
 }
 
-+ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey;
-{
-	return [KIFTestStep stepToTapViewWithAccessibilityLabelInReferenceDictionary:referenceDictionary labelKey:labelKey traitsKey:nil];
-}
-
-+ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey traitsKey:(NSString *)traitsKey;
-{
-	return [KIFTestStep stepToTapViewWithAccessibilityLabelInReferenceDictionary:referenceDictionary labelKey:labelKey valueKey:nil traitsKey:traitsKey];
-}
-
-+ (id)stepToTapViewWithAccessibilityLabelInReferenceDictionary:(NSDictionary *)referenceDictionary labelKey:(NSString *)labelKey valueKey:(NSString *)valueKey traitsKey:(NSString *)traitsKey;
-{	
-    NSString *description = [NSString stringWithFormat:@"Tap view with accessibility label in reference dictionary"];
-	
-    // After tapping the view we want to wait a short period to allow things to settle (animations and such). We can't do this using CFRunLoopRunInMode() because certain things, such as the built-in media picker, do things with the run loop that are not compatible with this kind of wait. Instead we leverage the way KIF hooks into the existing run loop by returning "wait" results for the desired period.
-    const NSTimeInterval quiesceWaitInterval = 0.5;
-    __block NSTimeInterval quiesceStartTime = 0.0;
-    
-    __block UIView *view = nil;
-    
-    return [self stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
-		
-        // If we've already tapped the view and stored it to a variable, and we've waited for the quiesce time to elapse, then we're done.
-		
-		NSString *label = [referenceDictionary objectForKey:labelKey];
-		NSString *value = [referenceDictionary objectForKey:valueKey];
-		UIAccessibilityTraits traits;
-		if (traitsKey) 
-		{
-			traits = [[referenceDictionary objectForKey:traitsKey] integerValue];
-		}
-		else 
-		{
-			traits = UIAccessibilityTraitNone;
-		}
-		
-        if (view) {
-            KIFTestWaitCondition(([NSDate timeIntervalSinceReferenceDate] - quiesceStartTime) >= quiesceWaitInterval, error, @"Waiting for view to become the first responder.");
-            return KIFTestStepResultSuccess;
-        }
-		
-        UIAccessibilityElement *element = [self _accessibilityElementWithLabel:label accessibilityValue:value tappable:YES traits:traits error:error];
-        if (!element) {
-            return KIFTestStepResultWait;
-        }
-		
-        view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
-        KIFTestWaitCondition(view, error, @"Failed to find view for accessibility element with label \"%@\"", label);
-		
-        if (![self _isUserInteractionEnabledForView:view]) {
-            if (error) {
-                *error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"View with accessibility label \"%@\" is not enabled for interaction", label], NSLocalizedDescriptionKey, nil]] autorelease];
-            }
-            return KIFTestStepResultWait;
-        }
-		
-        CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
-        CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
-		
-        // This is mostly redundant of the test in _accessibilityElementWithLabel:
-        KIFTestWaitCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
-        [view tapAtPoint:tappablePointInElement];
-		
-        KIFTestCondition(![view canBecomeFirstResponder] || [view isDescendantOfFirstResponder], error, @"Failed to make the view %@ which contains the accessibility element \"%@\" into the first responder", view, label);
-		
-        quiesceStartTime = [NSDate timeIntervalSinceReferenceDate];
-		
-        KIFTestWaitCondition(NO, error, @"Waiting for the view to settle.");
-    }];
-}
-
 + (id)stepToTapViewWithAccessibilityLabel:(NSString *)label;
 {
     return [self stepToTapViewWithAccessibilityLabel:label traits:UIAccessibilityTraitNone];
@@ -319,7 +248,7 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
     } else {
         description = [NSString stringWithFormat:@"Tap view with accessibility label \"%@\"", label];
     }
-	
+
     // After tapping the view we want to wait a short period to allow things to settle (animations and such). We can't do this using CFRunLoopRunInMode() because certain things, such as the built-in media picker, do things with the run loop that are not compatible with this kind of wait. Instead we leverage the way KIF hooks into the existing run loop by returning "wait" results for the desired period.
     const NSTimeInterval quiesceWaitInterval = 0.5;
     __block NSTimeInterval quiesceStartTime = 0.0;
@@ -327,39 +256,39 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
     __block UIView *view = nil;
     
     return [self stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
-		
+
         // If we've already tapped the view and stored it to a variable, and we've waited for the quiesce time to elapse, then we're done.
         if (view) {
             KIFTestWaitCondition(([NSDate timeIntervalSinceReferenceDate] - quiesceStartTime) >= quiesceWaitInterval, error, @"Waiting for view to become the first responder.");
             return KIFTestStepResultSuccess;
         }
-		
+
         UIAccessibilityElement *element = [self _accessibilityElementWithLabel:label accessibilityValue:value tappable:YES traits:traits error:error];
         if (!element) {
             return KIFTestStepResultWait;
         }
-		
+
         view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
         KIFTestWaitCondition(view, error, @"Failed to find view for accessibility element with label \"%@\"", label);
-		
+
         if (![self _isUserInteractionEnabledForView:view]) {
             if (error) {
                 *error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"View with accessibility label \"%@\" is not enabled for interaction", label], NSLocalizedDescriptionKey, nil]] autorelease];
             }
             return KIFTestStepResultWait;
         }
-		
+
         CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
         CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
-		
+
         // This is mostly redundant of the test in _accessibilityElementWithLabel:
         KIFTestWaitCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
         [view tapAtPoint:tappablePointInElement];
-		
+
         KIFTestCondition(![view canBecomeFirstResponder] || [view isDescendantOfFirstResponder], error, @"Failed to make the view %@ which contains the accessibility element \"%@\" into the first responder", view, label);
-		
+
         quiesceStartTime = [NSDate timeIntervalSinceReferenceDate];
-		
+
         KIFTestWaitCondition(NO, error, @"Waiting for the view to settle.");
     }];
 }
@@ -409,7 +338,7 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
         
         UIView *view = [UIAccessibilityElement viewContainingAccessibilityElement:element];
         KIFTestWaitCondition(view, error, @"Cannot find view with accessibility label \"%@\"", label);
-		
+                
         CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
         CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
         
@@ -523,7 +452,7 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
         // This is mostly redundant of the test in _accessibilityElementWithLabel:
         KIFTestCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
         [switchView tapAtPoint:tappablePointInElement];
-		
+
         // This is a UISwitch, so make sure it worked
         if (switchIsOn != switchView.on) {
             NSLog(@"Faking turning switch %@ with accessibility label %@", switchIsOn ? @"ON" : @"OFF", label);
@@ -878,7 +807,7 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
             if (value && [[UIApplication sharedApplication] accessibilityElementWithLabel:label accessibilityValue:nil traits:traits]) {
                 *error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Found an accessibility element with the label \"%@\", but not with the value \"%@\"", label, value], NSLocalizedDescriptionKey, nil]] autorelease];
                 
-				// Check the traits, too.
+            // Check the traits, too.
             } else if (traits != UIAccessibilityTraitNone && [[UIApplication sharedApplication] accessibilityElementWithLabel:label accessibilityValue:nil traits:UIAccessibilityTraitNone]) {
                 *error = [[[NSError alloc] initWithDomain:@"KIFTest" code:KIFTestStepResultFailure userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Found an accessibility element with the label \"%@\", but not with the traits \"%d\"", label, traits], NSLocalizedDescriptionKey, nil]] autorelease];
                 
@@ -926,7 +855,7 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
     if ([NSStringFromClass([view class]) isEqualToString:@"UIWebBrowserView"]) {
         return element;
     }
-	
+
     if (mustBeTappable) {
         // Make sure the view is tappable
         if (![view isTappable]) {
