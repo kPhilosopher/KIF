@@ -581,6 +581,24 @@ static NSTimeInterval KIFTestStepDefaultTimeout = 10.0;
     }];
 }
 
++ (id)stepToEnsureEmptyTableViewWithAccessibilityLabel:(NSString*)tableViewLabel;
+{
+    NSString *description = [NSString stringWithFormat:@"Step to ensure empty tableView with label %@", tableViewLabel];
+    return [KIFTestStep stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
+        UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:tableViewLabel];
+        KIFTestCondition(element, error, @"View with label %@ not found", tableViewLabel);
+        UITableView *tableView = (UITableView*)[UIAccessibilityElement viewContainingAccessibilityElement:element];
+        
+        KIFTestCondition([tableView isKindOfClass:[UITableView class]], error, @"Specified view is not a UITableView");
+        
+        KIFTestCondition(tableView, error, @"Table view with label %@ not found", tableViewLabel);
+        
+		KIFTestCondition((![tableView indexPathsForVisibleRows]), error, @"Table view has been populated", tableViewLabel);
+        
+        return KIFTestStepResultSuccess;
+    }];
+}
+
 #pragma mark Step Collections
 
 + (NSArray *)stepsToChoosePhotoInAlbum:(NSString *)albumName atRow:(NSInteger)row column:(NSInteger)column;

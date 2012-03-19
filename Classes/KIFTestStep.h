@@ -430,4 +430,13 @@ typedef KIFTestStepResult (^KIFTestStepExecutionBlock)(KIFTestStep *step, NSErro
  */
 + (id)stepToTapRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath;
 
+/*!
+ @method stepToEnsureEmptyTableViewWithAccessibilityLabel
+ @abstract A step that ensures an empty table view with the given label.
+ @discussion This step will get the view with the specified accessibility label and check to see if there are any visible cells.
+ @param tableViewLabel Accessibility label of the table view.
+ @result A configured test step.
+ */
++ (id)stepToEnsureEmptyTableViewWithAccessibilityLabel:(NSString*)tableViewLabel;
+
 @end
